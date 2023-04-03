@@ -4,6 +4,7 @@ from PIL import Image
 import cv2
 from regions_representations import matrix2acc, matrix2rle
 from regions_finding import region_labeling
+from math import sqrt
 
 
 def perimeter(acc_contorno: list) -> int:
@@ -58,6 +59,46 @@ def normal_central_moment(region: np.array, p: int, q: int) -> float:
     M = central_moments(region, p, q)
     M_00 = central_moments(region, 0, 0)
     return M / M_00 ** ((p + q) / 2 + 1)
+
+
+def main():
+    imagen = Image.open("img.png")
+    imagen = imagen.convert("L")
+    imagen = np.where(np.array(imagen) > 128, 0, 1).astype(np.uint8)
+    regiones = region_labeling(imagen)
+    region_prueba = regiones[0]
+    temp = np.where(region_prueba == 1, 255, 0).astype(np.uint8)
+    contour, _ = cv2.findContours(temp, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_SIMPLE)
+    contorno = contour[0].squeeze().tolist()
+    acc_contorno = matrix2acc(contorno)
+    rle = matrix2rle(region_prueba)
+    area = areaMatrix(region_prueba)
+    perimetro = perimeter(acc_contorno)
+    circ = circularity(area, perimetro)
+    x_min, y_min, x_max, y_max = bounding_box(contorno)
+    x_centro, y_centro = centroid(region_prueba)
+    M_20 = central_moments(region_prueba, 2, 0)
+    M_20_norm = normal_central_moment(region_prueba, 2, 0)
+    M_02 = central_moments(region_prueba, 0, 2)
+    M_02_norm = normal_central_moment(region_prueba, 0, 2)
+    M_11 = central_moments(region_prueba, 1, 1)
+    M_11_norm = normal_central_moment(region_prueba, 1, 1)
+
+    print("Area: ", area)
+    print("Perimetro: ", perimetro)
+    print("Circularidad: ", circ)
+    print("Bounding box: ", x_min, y_min, x_max, y_max)
+    print("Centroide: ", x_centro, y_centro)
+    print("Momento central M_20: ", M_20)
+    print("Momento central normalizado M_20: ", M_20_norm)
+    print("Momento central M_02: ", M_02)
+    print("Momento central normalizado M_02: ", M_02_norm)
+    print("Momento central M_11: ", M_11)
+    print("Momento central normalizado M_11: ", M_11_norm)
+
+
+if __name__ == "__main__":
+    main()
 
 
 
