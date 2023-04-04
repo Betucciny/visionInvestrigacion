@@ -27,13 +27,15 @@ def thinning(imagen: np.array) -> np.array:
 
 def main():
     # Cargar la imagen
-    image = np.where(data.horse() > 0, 0, 1).astype(np.uint8)
+    image = np.where(data.horse() > 0, 1, 0).astype(np.uint8)
     skel_image = thinning(image)
 
     plt.imshow(image, cmap='gray')
+    plt.title("Imagen original")
     plt.show()
     plt.clf()
     plt.imshow(skel_image, cmap='gray')
+    plt.title("Imagen esqueletizada con morfología")
     plt.show()
     plt.clf()
 

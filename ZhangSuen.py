@@ -63,10 +63,8 @@ def main():
     skel_image = zhangSuen(image)
 
     # Mostrar la imagen original y la imagen esquelética
-    plt.imshow(image, cmap='gray')
-    plt.show()
-    plt.clf()
     plt.imshow(skel_image, cmap='gray')
+    plt.title('Imagen esquelética, Zhang-Suen')
     plt.show()
     plt.clf()
 
